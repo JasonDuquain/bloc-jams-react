@@ -10,10 +10,11 @@ class Album extends Component {
        });
  
      this.state = {
-         album: album,
-         currentSong: album.songs[0],
-         isPlaying: false
-     };
+            album: album,
+            currentSong: album.songs[0],
+            isPlaying: false,
+            hoveredSong: ''
+        };
        
        this.audioElement = document.createElement('audio');
        this.audioElement.src = album.songs[0].audioSrc;
@@ -37,45 +38,63 @@ class Album extends Component {
     handleSongClick(song) {
         const isSameSong = this.state.currentSong === song;
         if (this.state.isPlaying && isSameSong) {
-           this.pause();
-         } else {
-             if (!isSameSong) { this.setSong(song); }   
-             this.play();
-         }
-   }
+            this.pause();
+        } else {
+            if (!isSameSong) { this.setSong(song); }
+            this.play();
+        }
+    }
+
+    handleHoverSong(song) {
+        this.setState({ hoveredSong: song }); 
+    }
+
+    handleBlurSong(song) {
+        this.setState({ hoveredSong: song });
+    }
+
+    switchIconOrNum(song, index) {
+        if (!this.state.isPlaying && song === this.state.hoveredSong) {
+            return <span className="ion-md-play"></span>
+        } else if (this.state.isPlaying && song === this.state.currentSong) {
+            return <span className="ion-md-pause"></span>
+        } else {
+            return <span>{index + 1}</span>
+        }
+    }
     
    render() {
-     return (
-       <section className="album">
-         <section id="album-info">
-           <img id="album-cover-art" src={this.state.album.albumCover} alt={this.state.album.title}/>
-           <div className="album-details">
-             <h1 id="album-title">{this.state.album.title}</h1>
-             <h2 className="artist">{this.state.album.artist}</h2>
-             <div id="release-info">{this.state.album.releaseInfo}</div>
-           </div>
-         </section>
-          <table id="song-list">
-           <colgroup>
-             <col id="song-number-column" />
-             <col id="song-title-column" />
-             <col id="song-duration-column" />
-           </colgroup>  
-           <tbody>
-               {
-                    this.state.album.songs.map((song, index) => {
-                        return <tr key={index} onClick={() => this.handleSongClick(song)}>
-                                  <td>{index + 1}</td>
-                                  <td>{song.title}</td>
-                                  <td>{song.duration}</td>
-                               </tr>
-                    })
-                }
-           </tbody>
-         </table>
-       </section>
-     );
-   }
+        return (
+            <section className="album">
+                <section id="album-info">
+                    <img id="album-cover-art" src={this.state.album.albumCover} alt={this.state.album.title}/>
+                    <div className="album-details">
+                     <h1 id="album-title">{this.state.album.title}</h1>
+                     <h2 className="artist">{this.state.album.artist}</h2>
+                     <div id="release-info">{this.state.album.releaseInfo}</div>
+                   </div>
+                </section>
+                <table id="song-list">
+                    <colgroup>
+                         <col id="song-number-column" />
+                         <col id="song-title-column" />
+                         <col id="song-duration-column" />
+                    </colgroup>
+                    <tbody>
+                        {this.state.album.songs.map( (song, index) => 
+                            <tr key={index} onClick={ () => this.handleSongClick(song)} 
+                                            onMouseEnter={ () => this.handleHoverSong(song) } 
+                                            onMouseLeave={ () => this.handleBlurSong(song)} >
+                                <td>{this.switchIconOrNum(song, index)}</td>
+                                <td>{song.title}</td>
+                                <td>{song.duration} seconds</td>
+                            </tr>
+                        )}       
+                    </tbody>
+                </table>
+            </section>
+        );
+    }
  }
 
 export default Album;
