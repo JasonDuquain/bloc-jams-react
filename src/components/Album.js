@@ -16,7 +16,8 @@ class Album extends Component {
             currentTime: 0,
             duration: album.songs[0].duration, 
             isPlaying: false,
-            hoveredSong: ''
+            hoveredSong: '',
+            volume: 0
         };
        
        this.audioElement = document.createElement('audio');
@@ -40,16 +41,21 @@ class Album extends Component {
        },
        durationchange: e => {
          this.setState({ duration: this.audioElement.duration });
-       }
+       },
+       volumechange: e => {
+         this.setState({ volume: this.audioElement.volume });
+       }   
      };
        this.audioElement.addEventListener('timeupdate', this.eventListeners.timeupdate);
        this.audioElement.addEventListener('durationchange', this.eventListeners.durationchange);
+       this.audioElement.addEventListener('volumechange', this.eventListeners.volumechange);
     }
     
     componentWillUnmount() {
       this.audioElement.src = null;
       this.audioElement.removeEventListener('timeupdate', this.eventListeners.timeupdate);
       this.audioElement.removeEventListener('durationchange', this.eventListeners.durationchange);
+      this.audioElement.removeEventListener('volumechange', this.eventListeners.volumechange);
    }
     
     setSong(song) {
@@ -110,6 +116,21 @@ class Album extends Component {
      this.setState({ currentTime: newTime });
    }
     
+    formatTime(time) {
+        if (typeof time !== 'number') {
+            return "-:--";
+        }
+        let M = Math.floor(time / 60);
+        let SS = (time - M * 60).toFixed(0);
+        return String(`${M}:${SS}`);
+    }
+    
+    handleVolumeChange(e) {
+        const newVolume = e.target.value; 
+        this.audioElement.volume = newVolume;
+        this.setState({ volume: newVolume });
+   }
+    
    render() {
         return (
             <section className="album">
@@ -134,22 +155,26 @@ class Album extends Component {
                                             onMouseLeave={ () => this.handleBlurSong(song)} >
                                 <td>{this.switchIconOrNum(song, index)}</td>
                                 <td>{song.title}</td>
-                                <td>{song.duration} seconds</td>
+                                <td>{this.formatTime(Number(song.duration))}</td>
                             </tr>
                         )}       
                     </tbody>
                 </table>
-                <PlayerBar isPlaying={this.state.isPlaying} currentSong={this.state.currentSong} currentTime={this.audioElement.currentTime} duration={this.audioElement.duration} 
+                <PlayerBar isPlaying={this.state.isPlaying} currentSong={this.state.currentSong} currentTime={this.formatTime(this.state.currentTime)} duration={this.state.duration}
+                    volume={this.state.volume}
                     handleSongClick={() => this.handleSongClick(this.state.currentSong)} 
                     handlePrevClick={() => this.handlePrevClick()} handleNextClick={() => this.handleNextClick()}
                     handleTimeChange={(e) => this.handleTimeChange(e)}
+                    formatTime={(e) => this.formatTime(e)}
+                    handleVolumeChange={(e) => this.handleVolumeChange(e)}
                     />
             </section>
         );
     }
  }
 
- 
+ /* 20180831 - in the last table cell (<td>)) the song.duration was cast into a number (Number(song.duration)) in order to not default to "-:--". 
+*/
  
 export default Album;
 

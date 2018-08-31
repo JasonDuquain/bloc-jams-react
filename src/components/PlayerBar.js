@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
  
 class PlayerBar extends Component {
+    
    render() {
      return (
        <section className="player-bar">
@@ -20,25 +21,36 @@ class PlayerBar extends Component {
                <input 
                  type="range" 
                  className="seek-bar" 
-                 value={(this.props.currentTime / this.props.duration) || 0} 
+                 defaultValue={(this.props.currentTime / this.props.duration) || 0} 
                  max="1" 
                  min="0" 
                  step="0.01"
                  onChange={this.props.handleTimeChange}
                />   
-           <div className="total-time">{this.props.duration}</div> 
+           <div className="total-time">{this.props.formatTime(this.props.duration)}</div> 
              </section>
              <section id="volume-control">
-               <div className="icon ion-volume-low"></div>
-               <input type="range" className="seek-bar" defaultValue="80" />
-               <div className="icon ion-volume-high"></div>
+               <div className="icon ion-md-volume-low" style={{display: 'inline-block', margin: '0 1em'}}></div>
+               <input type="range" 
+                      className="seek-bar" 
+                      defaultValue="0" 
+                      max="1" 
+                      min="0" 
+                      step=".10"
+                      onChange={this.props.handleVolumeChange}
+                />
+               <div className="icon ion-md-volume-high" style={{display: 'inline-block', margin: '0 1em'}}></div>
+                <div className="total-volume">{(this.props.volume * 10)}</div> 
              </section>
            </section>
      );
    }
 }
- 
 
+/* 20180831 - in the <input type="range" class="seek-bar"> element "value" was updated to "defaultValue" to fix issue of frozen slider (https://stackoverflow.com/questions/36122034/jsx-react-html5-input-slider-doesnt-work)
+*/
+
+/* 20180831 - next checkpoint TODO: added inline styles to align the volume icons..remove these in the next checkpoint and add to external styles instead */
 
 export default PlayerBar;
 
