@@ -122,6 +122,9 @@ class Album extends Component {
         }
         let M = Math.floor(time / 60);
         let SS = (time - M * 60).toFixed(0);
+        if (SS > 0 && SS < 10) {
+            return String(`${M}:0${SS}`);
+        }
         return String(`${M}:${SS}`);
     }
     
