@@ -10,6 +10,7 @@ class Album extends Component {
         return album.slug === this.props.match.params.slug
        });
  
+       
      this.state = {
             album: album,
             currentSong: album.songs[0],
@@ -27,6 +28,7 @@ class Album extends Component {
     play() {
        this.audioElement.play();
        this.setState({ isPlaying: true });
+       
    }
     
    pause() {
@@ -163,7 +165,7 @@ class Album extends Component {
                         )}       
                     </tbody>
                 </table>
-                <PlayerBar isPlaying={this.state.isPlaying} currentSong={this.state.currentSong} currentTime={this.formatTime(this.state.currentTime)} duration={this.state.duration}
+                <PlayerBar isPlaying={this.state.isPlaying} currentSong={this.state.currentSong} currentTime={this.state.currentTime} duration={this.state.duration}
                     volume={this.state.volume}
                     handleSongClick={() => this.handleSongClick(this.state.currentSong)} 
                     handlePrevClick={() => this.handlePrevClick()} handleNextClick={() => this.handleNextClick()}
